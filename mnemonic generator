@@ -1,0 +1,72 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+
+    FILE *p ,*q,*r;
+    int i=0,j=0,k=0;
+    char a[30],b[10],c[10];
+    p=fopen("smnemonic.txt","r");
+
+    r=fopen("mnemonic.txt","w");
+        fscanf(p,"%s",a);
+    while(!feof(p)&&a[0]!='\0')
+    {
+        q=fopen("label.txt","r");
+
+        j=0;
+        i++;
+        if(i%2!=0)
+        {
+                fprintf(r,"%s",a);
+
+        }
+        else{
+                for(k=0;k<4;k++)
+                {
+                    if(a[k]=='x')
+                    {
+
+                        j++;
+                    }
+                }
+                if(j==4)
+                {
+
+                    fprintf(r,"\n","");
+
+                }
+                else{
+                        j=0;
+                    while(!feof(q))
+                    {
+
+                        fscanf(q,"%s",b);
+                        if(!strcmp(a,b))
+                           {
+
+
+                               j=1;
+                               break;
+
+                           }
+                    }
+
+                    if(j==1)
+                    {
+                          fscanf(q,"%s",b);
+                            fclose(q);
+                        fprintf(r,"%s\n",b);
+
+                    }
+                    else{
+                        printf("Label not exist");
+                    }
+
+                }
+
+        }
+                fscanf(p,"%s",a);
+    }
+
+}
