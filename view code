@@ -1,0 +1,17 @@
+#include<stdio.h>
+int main()
+{
+
+    FILE *p=fopen("display.txt","r"),*q=fopen("mnemonic.txt","r");
+    char a[40];
+
+    while(!feof(p)&&!(feof(q)))
+    {
+    fgets(a,70,p);
+    puts(a);
+    printf("MNEMONIC: ");
+    fgets(a,70,q);
+    puts(a);
+
+}
+}
