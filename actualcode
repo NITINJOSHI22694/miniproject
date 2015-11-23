@@ -1,0 +1,706 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+char la[5],label[10],dlabel[10],code[10],operand[10],reg1[2],reg2[2];
+int format=0,opcode=0,error=0,n[1],in[1],x[1],pluse,eerror=0;
+long int mem=4096;
+
+int extract (char a[])
+{
+int i,j,k,l,sstring=0,var1,var2,var3=0,var4=0,var5,count=0;
+FILE *q;
+char temp[10],label[10],ctemp[2];
+
+reg1[0]='\0';
+reg2[0]='\0';
+error=0;
+format=0;
+la[0]='\0';
+dlabel[0]='\0';
+label[0]='\0';
+code[0]='\0';
+n[0]=0;
+x[0]=0;
+in[0]=0;
+pluse=0;
+operand[0]='\0';
+i=strlen(a),
+j=0;
+sstring=0;
+if(i==0)
+{
+
+    return 0;
+}
+while(j<=i&&i!=0)
+{
+
+    while(j<=i)
+    {
+        if(a[j]!=' ')
+        {
+            sstring++;
+            k=j;
+            while(j<=i)
+            {
+
+                if(j==i)
+                    {
+
+                        l=j+1;
+                        j++;
+                        break;
+                    }
+                if(a[j]==' ')
+                {
+
+                    l=j;
+
+                    break;
+                }
+                else{
+                    j++;
+                }
+
+            }
+            j++;
+            break;
+        }
+        else
+        {
+            j++;
+        }
+    }
+
+    var1=0;
+    for(;k<l;k++)
+    {
+
+        temp[var1]=a[k];
+        var1++;
+    }
+    temp[var1]='\0';
+
+    strlwr(temp);
+    if(sstring==1&&!strcmp(temp,"end"))
+    {
+        error= 1;
+        return(-1);
+    }
+    if(sstring==1&&!strcmp(temp,"l"))
+    {
+
+        strcpy(la,temp);
+        var3=1;
+
+    }
+    if(var3==1&&sstring==2)
+    {
+
+
+        strcpy(label,temp);
+        strcpy(dlabel,label);
+
+        var2=llabel(label,mem);
+
+        if(var2==13)
+        {
+            error =1;
+            return 13;
+        }
+    }
+    if((var4==0 && sstring==3)||(var3!=1 && sstring==1))
+    {
+    strcpy(code,temp);
+        var4=1;
+
+        var5=ccode(temp);
+        if(var5==14)
+
+            {
+               error=1;
+                return(14);
+            }
+        else{
+            while(l<=i&&format==1)
+            {
+
+                if(a[l]!=' ')
+                {
+                    error=1;
+                    return 100;
+                }
+                l++;
+            }
+            while(l<i&&format==2)
+            {
+
+                if(a[l]!=' ')
+                {
+                    if(a[l]=='a'||a[l]=='b'||a[l]=='c'||a[l]=='d'||a[l]=='e'||a[l]=='g'||a[l]=='A'||a[l]=='B'||a[l]=='C'||a[l]=='D'||a[l]=='E'||a[l]=='G')
+                    {
+                        if(!strlen(reg1))
+                     reg1[0]=a[l];
+                     else
+                        reg2[0]=a[l];
+                        reg1[1]='\0';
+                        reg2[1]='\0';
+                        count ++;
+                        l++;
+                    }
+
+
+                    else
+                    {
+                        error=1;
+                    return 103;
+                    }
+
+
+                }
+                else
+                {
+                    l++;
+                }
+
+
+            }
+            if(format==2)
+            {
+
+                if(count <=1)
+                {
+                    error=1;
+                    return 101;
+                }
+                if(count>2)
+                {
+
+                    error=1;
+                    return 102;
+                }
+            }
+            if(format ==3&&l>i)
+            {
+                return 104;
+            }
+            else
+            {
+
+                extract2(a,l);
+                break;
+            }
+        }
+
+    }
+
+}
+
+return (sstring);
+}
+int llabel(char clabel[],int addr)
+{
+    char t[10];
+    int i=0,j=0;
+    FILE *p;
+    p=fopen("label.txt","r");
+    while(!feof(p))
+    {
+
+    fscanf(p,"%s",&t);
+    i=strcmp(t,clabel);
+    if(i==0)
+    return(13);
+
+    }
+    fclose(p);
+
+        p=fopen("label.txt","a");
+        fprintf(p,"\n%s",clabel);
+        fprintf(p," %x",addr);
+        fclose(p);
+
+
+}
+int main()
+{
+
+    int i,j,k,n1,n2,n3,n4,svar=1,calc=0,calc1=3;
+    FILE *p,*q,*r=fopen("mnemonic.txt","w"),*reg;
+    char ctemp[2],a[10],temp[10],fname[10]="file",varc1,varc2,varc3,varc4;
+    //printf("memory ");//gine optio whether to choose or not
+    //scanf("%ld",&mem);
+reg=fopen("label.txt","w");
+fclose(reg);
+reg=fopen("display.txt","w");
+fclose(reg);
+q=fopen("smnemonic.txt","w");
+fclose(q);
+       while(1)
+{
+    calc1=3;
+ctemp[0]=97;
+ctemp[1]='\0';
+        printf("%x ",mem);
+    gets(a);
+    if(strlen(a)==1&&a[0]=='b')
+    {
+return 0;
+
+        break;
+    }
+    j=extract(a);
+    if(j==-1)
+    {
+
+     break;
+
+    }
+    if(j==13)
+    {
+        error=1;
+        printf("Error label name already in use \n");
+    }
+    if(j==14)
+    {
+error=1;
+        printf("\nwrong operation code\n");
+    }
+    if(j==100)
+    {
+error=1;
+        printf("to many operand for format 1\n");
+        format=0;
+    }
+    if(j==101)
+    {
+error=1;
+        printf("few arguments for format 2\n");
+        format=0;
+    }
+    if(j==102)
+    {
+error=1;
+        printf("many arguments for format 2\n");
+        format=0;
+    }
+    if(j==103)
+{
+error=1;
+    printf("wrong argument for format 2\n");
+    format=0;
+}
+if(j==104)
+{
+error=1;
+    printf("Less argument for format 3\n");
+    format=0;
+}
+if(error==1)
+{
+
+    format=0;
+}
+
+if(error==0)
+{
+
+
+    p=fopen("display.txt","a");
+    q=fopen("smnemonic.txt","a");
+
+ if(format ==1)
+ {
+
+     if(la[0]=='\0')
+     fprintf(p,"%x %s\n",mem,code);
+        else
+     fprintf(p,"%x %s %s %s\n",mem,la,dlabel,code);
+        fprintf(q,"%x xxxx\n",opcode);
+ }
+ else if(format ==2)
+ {
+ strlwr(reg1);
+     strlwr(reg2);
+ if(la[0]=='\0')
+    fprintf(p,"%x %s %s %s\n",mem,code,reg1,reg2);
+else
+     fprintf(p,"%x %s %s %s %s %s\n",mem,la,dlabel,code,reg1,reg2);
+fprintf(q,"%x%d%d xxxx\n",opcode,reg1[0]-97,reg2[0]-97);
+
+ }
+else if(format==3)
+{
+
+if(la[0]!='\0')
+{
+    fprintf(p,"%x %s %s %s",mem,la,dlabel,code);
+
+}
+ if(la[0]=='\0')
+
+    fprintf(p,"%x %s ",mem,code);
+
+if(n[0]==1)
+    fprintf(p,"n "," ");
+    if(in[0]==1)
+        fprintf(p,"i "," ");
+     if(x[0]==1)
+        fprintf(p,"x "," ");
+     if(pluse==1)
+        fprintf(p,"+ "," ");
+
+    fprintf(p," %s \n",operand);
+    opcode=opcode+((128*n[0])+(64*in[0])+(32*x[0]));
+    fprintf(q,"%x",opcode);
+    calc1=atoi(operand);
+    if(calc1!=0)
+    {
+        fprintf(q,"0%x xxxx\n",calc1);
+
+    }
+    else
+    fprintf(q," %s\n",operand);
+
+}
+}
+
+
+    mem=mem+format;
+    if(mem>65535)
+    {
+
+        printf("Memory insufficient\n");
+        return 0;
+    }
+}
+fclose(q);
+
+}
+
+int  ccode(char a[])
+{
+
+    FILE *p;
+    int i=1,j=0;
+    char temp[10];
+
+    p=fopen("opcode.txt","r");
+
+
+    while(!feof(p))
+    {
+
+
+        fscanf(p,"%s",&temp);
+
+        i=strcmp(temp,a);
+        if(i==0)
+        {
+     focode(p);
+        return 10;
+
+        }
+
+    }
+    if(i!=0)
+    {
+
+        return 14;
+    }
+
+
+}
+void focode(FILE *p)
+{
+
+    char temp[10];
+
+    fscanf(p,"%s",&temp);
+    format =atoi(temp);
+    fscanf(p,"%s",&temp);
+    opcode=atoi (temp);
+
+}
+
+void extract2(char a[],int l )
+{
+int j=l,k,abk,abk1=2,var1,i,var2=0,var3=0,var4=0,sstring=0,var5=0,var6=0,var7=0;
+char temp[10],b,c;
+i=strlen(a);
+while(j<=i&&i!=0)
+{
+    while(j<=i)
+    {
+        if(a[j]!=' ')
+        {
+            sstring++;
+            k=j;
+            while(j<=i)
+            {
+
+                if(j==i)
+                    {
+
+                        l=j+1;
+                        j++;
+                        break;
+                    }
+                if(a[j]==' ')
+                {
+
+                    l=j;
+
+                    break;
+                }
+                else{
+                    j++;
+                }
+
+            }
+            j++;
+            break;
+        }
+        else
+        {
+            j++;
+        }
+    }
+
+
+    var1=0;
+    for(;k<l;k++)
+    {
+
+        temp[var1]=a[k];
+        var1++;
+    }
+    temp[var1]='\0';
+    var1=strlen(temp);// la[5],label[10],code[10],n[1],i[1],x[1],plus[5],operand[10];
+//int format=0,opcode=0,n=0,i=0,x=0,error=0;
+
+
+
+    if(var1==1)
+    {
+
+
+     if(temp[0]=='n')
+    {
+        if(var7==1)
+        {
+
+            printf("misplaced operand\n");
+            error=1;
+            return;
+        }
+
+        if(var2==0 &&var5==0)
+        {
+
+
+        if(in[0]==1)
+        {
+            error =1;
+            printf("immediate addressing mode\n");
+            return ;
+        }
+        else
+        {
+
+
+        n[0]=1;
+        var2=1;
+        }
+        }
+        else
+        {
+
+            error =1;
+
+            if(var2==1)
+                printf("could not use n twice\n");
+            if(var5==1)
+                printf("could not use n after + \n");
+            return;
+
+        }
+    }
+    else if(temp[0]=='i')
+    {
+        if(var7==1)
+        {
+
+            printf("misplaced operand\n");
+            error=1;
+            return;
+        }
+
+        if(var3==0 && var5==0)
+        {
+            if(n[0]==1)
+            {
+                error=1;
+                printf("direct addressing mode\n");
+            }
+            else
+            {
+                var3=1;
+                in[0]=1;
+            }
+        }
+        else
+        {
+            error =1;
+            if(var2==1)
+            printf("could not use i twice\n");
+            if(var5==1)
+            printf("could not use i after + \n");
+            return;
+        }
+    }
+    else if(temp[0]=='x' )
+    {
+
+        if(var7==1)
+        {
+
+            printf("misplaced operand\n");
+            error=1;
+            return;
+        }
+
+        if(var6==0 && var5==0)
+        {
+            x[0]=1;
+            var6=1;
+
+        }
+        else if(var6==1)
+        {
+            error=1;
+            printf("could not use x twice\n");
+            return;
+        }
+        if(var5==1)
+        {
+            error=1;
+            printf("could not use x after +\n");
+            return;
+        }
+    }
+    else if(temp[0]=='+' )
+    {
+        if(var7==0)
+        {
+
+
+        if(var5==1)
+        {
+            printf("multiple use of + not allowed\n");
+            error=1;
+            return;
+        }
+        else
+        {
+            pluse=1;
+            var5=1;
+
+        }
+
+    }
+    else
+    {
+
+        printf("Misplaced operand \n");
+        error=1;
+        return;
+    }
+
+}
+else{
+
+    if(var7==1)
+    {
+
+        printf("Error\n");
+        error=1;
+        return;
+    }
+    else{
+
+        strcpy(operand,temp);
+                abk1=atoi(temp);
+            if(var5==1)
+            {
+
+            if(abk1!=0)
+            {
+
+
+        var7++;
+        strcpy(operand,temp);
+            }
+
+
+            else{
+                printf("Expected integer\n");
+                error=1;
+                return;
+            }
+
+    }
+var7++;
+
+}
+
+} }
+if(var1>=2)
+{
+
+    if(var7==1)
+    {
+
+        printf("Error\n");
+        error=1;
+        return ;
+
+    }
+    else{
+        strcpy(operand,temp);
+            abk1=atoi(temp);
+            if(var5==1)
+            {
+
+            if(abk1!=0)
+            {
+
+
+        var7++;
+        strcpy(operand,temp);
+            }
+
+
+            else{
+                printf("Expected integer\n");
+                error=1;
+                return;
+            }
+
+    }
+    var7++;
+
+    }
+}
+}
+if(var7==0&&format==3)
+{
+
+    printf("Operand not specified\n");
+    error=1;
+    return;
+}
+}
+
+
+
